@@ -1,7 +1,8 @@
 import type { DemoRequest, DemoResponse, Procedure, Patient } from "../types";
 import { insforge } from "../lib/insforge";
 
-const API_BASE = "/api";
+// Backend API base URL - uses environment variable or defaults to same origin
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api";
 
 export async function fetchProcedures(): Promise<Procedure[]> {
   const res = await fetch(`${API_BASE}/procedures`);
