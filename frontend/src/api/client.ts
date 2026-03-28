@@ -11,31 +11,32 @@ export async function fetchProcedures(): Promise<Procedure[]> {
 
 export async function fetchPatients(): Promise<Patient[]> {
   try {
-    const result = await insforge.database
+    const { data, error } = await insforge.database
       .from("profiles")
-      .select("*")
+      .select("user_id, name, role")
       .eq("role", "patient");
-
-    console.log("Patients query full result:", result);
-    console.log("Patients data:", result.data);
-    console.log("Patients error:", result.error);
-
-    const { data, error } = result;
 
     if (error) {
       console.error("Failed to fetch patients:", error);
       return [];
     }
 
-    if (!data || !Array.isArray(data)) {
-      console.warn("Unexpected data format:", typeof data, data);
+    if (!data) {
+      console.warn("No patient data returned");
       return [];
     }
+
+    // Handle both array and single object responses
+    const rows = Array.isArray(data) ? data : [data];
     
-    return data.map((row: { user_id: string; name: string }) => ({
-      id: row.user_id,
-      name: row.name || "Unknown",
-    }));
+    return rows
+      .filter((row): row is { user_id: string; name: string; role: string } => 
+        row && typeof row.user_id === 'string'
+      )
+      .map((row) => ({
+        id: row.user_id,
+        name: row.name || "Unknown Patient",
+      }));
   } catch (err) {
     console.error("Error fetching patients:", err);
     return [];
