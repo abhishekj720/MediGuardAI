@@ -13,7 +13,7 @@ export default function App() {
   const getHomeRoute = () => {
     if (isDoctor) return "/doctor";
     if (isPatient) return "/patient";
-    return "/doctor"; // Demo mode: skip login, go straight to demo
+    return "/login";
   };
 
   return (
@@ -103,10 +103,14 @@ export default function App() {
           }
         />
 
-        {/* Doctor Portal - HACKATHON DEMO: accessible without login */}
+        {/* Doctor Portal - only for doctors */}
         <Route
           path="/doctor"
-          element={<DoctorPortal />}
+          element={
+            <ProtectedRoute requiredRole="doctor">
+              <DoctorPortal />
+            </ProtectedRoute>
+          }
         />
 
         {/* Patient Portal - only for patients */}
