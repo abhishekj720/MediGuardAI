@@ -25,8 +25,9 @@ Multi-agent medical workflow orchestration demo. This application demonstrates h
               ┌───────────────┴───────────────┐
               ▼                               ▼
 ┌──────────────────────┐        ┌──────────────────────┐
-│    Anthropic API     │        │   Insforge Database  │
-│   (Claude AI Model)  │        │     (PostgreSQL)     │
+│  Insforge AI Gateway │        │   Insforge Database  │
+│  (OpenRouter → Claude│        │     (PostgreSQL)     │
+│   / OpenAI / etc.)   │        │                      │
 └──────────────────────┘        └──────────────────────┘
 ```
 
@@ -34,8 +35,7 @@ Multi-agent medical workflow orchestration demo. This application demonstrates h
 
 - **Python 3.11+**
 - **Node.js 18+** and npm
-- **Anthropic API Key** - Get one at [console.anthropic.com](https://console.anthropic.com)
-- **Insforge API Key** - For database access
+- **Insforge API Key** - For AI gateway and database access. Get one at [insforge.dev](https://insforge.dev)
 
 ## Quick Start
 
@@ -55,7 +55,6 @@ cp .env.example .env
 Edit `.env` with your API keys:
 
 ```env
-ANTHROPIC_API_KEY=your_anthropic_api_key_here
 INSFORGE_API_KEY=your_insforge_api_key_here
 INSFORGE_API_BASE_URL=http://localhost:7130
 ```
@@ -125,7 +124,8 @@ MediGuardAI/
 │   ├── agent.py            # Insurance processing logic
 │   └── models.py           # Data models
 ├── shared/                 # Shared utilities
-│   ├── db.py               # Database access layer
+│   ├── ai.py               # Insforge AI gateway client
+│   ├── db.py               # Insforge Postgres access layer
 │   └── schemas.py          # Pydantic schemas
 ├── db/
 │   └── seed.py             # Database seeding script
@@ -167,13 +167,11 @@ cd frontend && npm run lint
 - Run the server from the project root directory
 - Ensure venv is activated
 
-**"ANTHROPIC_API_KEY not set"**
-- Verify `.env` file exists and contains your API key
-- Restart the server after modifying `.env`
-
-**"Connection refused to Insforge"**
+**"Insforge API key or connection error"**
+- Verify `.env` file exists and contains your `INSFORGE_API_KEY`
 - Check `INSFORGE_API_BASE_URL` in `.env`
 - Ensure Insforge service is running
+- Restart the server after modifying `.env`
 
 **Frontend can't connect to backend**
 - Verify backend is running on port 8000
