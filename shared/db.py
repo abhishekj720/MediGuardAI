@@ -1,51 +1,90 @@
-import os
-import httpx
-from dotenv import load_dotenv
+import json
+import math
+from pathlib import Path
 
-load_dotenv()
-
-INSFORGE_API_KEY = os.getenv("INSFORGE_API_KEY", "")
-INSFORGE_API_BASE_URL = os.getenv("INSFORGE_API_BASE_URL", "http://localhost:7130")
-
-
-def get_insforge_headers() -> dict:
-    return {
-        "Authorization": f"Bearer {INSFORGE_API_KEY}",
-        "Content-Type": "application/json",
-    }
+# Local storage paths
+DATA_DIR = Path(__file__).parent.parent / "insurance" / "data"
+DOCUMENTS_FILE = DATA_DIR / "documents.json"
+EMBEDDINGS_FILE = DATA_DIR / "embeddings.json"
 
 
-async def execute_sql(query: str, params: list | None = None) -> dict:
-    """Execute a SQL query against the Insforge Postgres database."""
-    async with httpx.AsyncClient() as client:
-        response = await client.post(
-            f"{INSFORGE_API_BASE_URL}/api/db/query",
-            headers=get_insforge_headers(),
-            json={"query": query, "params": params or []},
-        )
-        response.raise_for_status()
-        return response.json()
+# ── Local Storage Helpers ────────────────────────────────────────────────
+
+def load_documents() -> list[dict]:
+    """Load all insurance documents from local JSON file."""
+    if not DOCUMENTS_FILE.exists():
+        return []
+    with open(DOCUMENTS_FILE, 'r') as f:
+        return json.load(f)
 
 
-async def get_diseases() -> list[dict]:
-    """Fetch all diseases from the database."""
-    result = await execute_sql("SELECT * FROM diseases ORDER BY name")
-    return result.get("rows", [])
+def load_embeddings() -> dict[str, list[float]]:
+    """Load all embeddings from local JSON file.
+    
+    Returns:
+        Dict mapping document ID (as string) to embedding vector.
+    """
+    if not EMBEDDINGS_FILE.exists():
+        return {}
+    
+    with open(EMBEDDINGS_FILE, 'r') as f:
+        return json.load(f)
 
 
-async def execute_rpc(function_name: str, params: dict) -> list[dict]:
-    """Call a Postgres function (RPC) via Insforge and return the rows."""
-    # Build a parameterized SELECT call to the function
-    param_placeholders = ", ".join(f"${i+1}" for i in range(len(params)))
-    query = f"SELECT * FROM {function_name}({param_placeholders})"
-    result = await execute_sql(query, list(params.values()))
-    return result.get("rows", [])
+def _cosine_similarity(vec1: list[float], vec2: list[float]) -> float:
+    """Calculate cosine similarity between two vectors."""
+    import math
+    
+    dot_product = sum(a * b for a, b in zip(vec1, vec2))
+    norm1 = math.sqrt(sum(a * a for a in vec1))
+    norm2 = math.sqrt(sum(b * b for b in vec2))
+    
+    if norm1 == 0 or norm2 == 0:
+        return 0.0
+    
+    return dot_product / (norm1 * norm2)
 
 
-async def get_disease_by_icd10(icd10_code: str) -> dict | None:
-    """Fetch a disease by ICD-10 code."""
-    result = await execute_sql(
-        "SELECT * FROM diseases WHERE icd10_code = $1", [icd10_code]
-    )
-    rows = result.get("rows", [])
-    return rows[0] if rows else None
+def match_insurance_docs(
+    query_embedding: list[float],
+    match_count: int = 5,
+    match_threshold: float = 0.70,
+) -> list[dict]:
+    """Find similar insurance documents using cosine similarity.
+    
+    Both documents and embeddings are loaded from local JSON files.
+    
+    Args:
+        query_embedding: The query embedding vector
+        match_count: Maximum number of matches to return
+        match_threshold: Minimum similarity threshold (0-1)
+    
+    Returns:
+        List of matching documents with similarity scores
+    """
+    # Load embeddings and documents from local files
+    embeddings = load_embeddings()
+    documents = load_documents()
+    
+    # Calculate similarity for each document
+    results = []
+    for doc in documents:
+        doc_id = str(doc.get("id"))
+        doc_embedding = embeddings.get(doc_id)
+        
+        if doc_embedding:
+            similarity = _cosine_similarity(query_embedding, doc_embedding)
+            
+            if similarity > match_threshold:
+                results.append({
+                    "id": doc["id"],
+                    "content": doc["content"],
+                    "source_file": doc["source_file"],
+                    "section_type": doc["section_type"],
+                    "procedure_codes": doc["procedure_codes"],
+                    "similarity": similarity,
+                })
+    
+    # Sort by similarity (descending) and return top matches
+    results.sort(key=lambda x: x["similarity"], reverse=True)
+    return results[:match_count]

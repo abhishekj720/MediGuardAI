@@ -1,0 +1,465 @@
+[
+  {
+    "id": 1,
+    "content": "[CPT Code | Procedure | Coverage Details]\n99213",
+    "source_file": "fee_schedule_2024.pdf",
+    "section_type": "fee_schedule",
+    "chunk_index": 0,
+    "procedure_codes": [
+      "99213"
+    ],
+    "metadata": {
+      "source_line": "99213",
+      "table_header": "CPT Code | Procedure | Coverage Details"
+    }
+  },
+  {
+    "id": 2,
+    "content": "[CPT Code | Procedure | Coverage Details]\n99214",
+    "source_file": "fee_schedule_2024.pdf",
+    "section_type": "fee_schedule",
+    "chunk_index": 1,
+    "procedure_codes": [
+      "99214"
+    ],
+    "metadata": {
+      "source_line": "99214",
+      "table_header": "CPT Code | Procedure | Coverage Details"
+    }
+  },
+  {
+    "id": 3,
+    "content": "[CPT Code | Procedure | Coverage Details]\n27447",
+    "source_file": "fee_schedule_2024.pdf",
+    "section_type": "fee_schedule",
+    "chunk_index": 2,
+    "procedure_codes": [
+      "27447"
+    ],
+    "metadata": {
+      "source_line": "27447",
+      "table_header": "CPT Code | Procedure | Coverage Details"
+    }
+  },
+  {
+    "id": 4,
+    "content": "[CPT Code | Procedure | Coverage Details]\n70553",
+    "source_file": "fee_schedule_2024.pdf",
+    "section_type": "fee_schedule",
+    "chunk_index": 3,
+    "procedure_codes": [
+      "70553"
+    ],
+    "metadata": {
+      "source_line": "70553",
+      "table_header": "CPT Code | Procedure | Coverage Details"
+    }
+  },
+  {
+    "id": 5,
+    "content": "[CPT Code | Procedure | Coverage Details]\n43239",
+    "source_file": "fee_schedule_2024.pdf",
+    "section_type": "fee_schedule",
+    "chunk_index": 4,
+    "procedure_codes": [
+      "43239"
+    ],
+    "metadata": {
+      "source_line": "43239",
+      "table_header": "CPT Code | Procedure | Coverage Details"
+    }
+  },
+  {
+    "id": 6,
+    "content": "[CPT Code | Procedure | Coverage Details]\n93000",
+    "source_file": "fee_schedule_2024.pdf",
+    "section_type": "fee_schedule",
+    "chunk_index": 5,
+    "procedure_codes": [
+      "93000"
+    ],
+    "metadata": {
+      "source_line": "93000",
+      "table_header": "CPT Code | Procedure | Coverage Details"
+    }
+  },
+  {
+    "id": 7,
+    "content": "[CPT Code | Procedure | Coverage Details]\n90837",
+    "source_file": "fee_schedule_2024.pdf",
+    "section_type": "fee_schedule",
+    "chunk_index": 6,
+    "procedure_codes": [
+      "90837"
+    ],
+    "metadata": {
+      "source_line": "90837",
+      "table_header": "CPT Code | Procedure | Coverage Details"
+    }
+  },
+  {
+    "id": 8,
+    "content": "[CPT Code | Procedure | Coverage Details]\n29881",
+    "source_file": "fee_schedule_2024.pdf",
+    "section_type": "fee_schedule",
+    "chunk_index": 7,
+    "procedure_codes": [
+      "29881"
+    ],
+    "metadata": {
+      "source_line": "29881",
+      "table_header": "CPT Code | Procedure | Coverage Details"
+    }
+  },
+  {
+    "id": 9,
+    "content": "[CPT Code | Procedure | Coverage Details]\n36415",
+    "source_file": "fee_schedule_2024.pdf",
+    "section_type": "fee_schedule",
+    "chunk_index": 8,
+    "procedure_codes": [
+      "36415"
+    ],
+    "metadata": {
+      "source_line": "36415",
+      "table_header": "CPT Code | Procedure | Coverage Details"
+    }
+  },
+  {
+    "id": 10,
+    "content": "[CPT Code | Procedure | Coverage Details]\n71046",
+    "source_file": "fee_schedule_2024.pdf",
+    "section_type": "fee_schedule",
+    "chunk_index": 9,
+    "procedure_codes": [
+      "71046"
+    ],
+    "metadata": {
+      "source_line": "71046",
+      "table_header": "CPT Code | Procedure | Coverage Details"
+    }
+  },
+  {
+    "id": 11,
+    "content": "Policy: Total Joint Replacement \u2014 Medical Necessity Criteria",
+    "source_file": "medical_policy_bulletin.pdf",
+    "section_type": "policy",
+    "chunk_index": 0,
+    "procedure_codes": [],
+    "metadata": {
+      "heading": "Policy: Total Joint Replacement \u2014 Medical Necessity Criteria"
+    }
+  },
+  {
+    "id": 12,
+    "content": "Policy ID: MPC-2024-ORTHO-001\n\nApplicable Codes: CPT 27447 (Total Knee Arthroplasty)\nTotal knee replacement is considered medically necessary when ALL of the following criteria are met: (1)\nRadiographic evidence of joint space narrowing, osteophytes, or bone-on-bone articulation consistent with\nKellgren-Lawrence Grade III or IV; (2) Functional limitation documented by a validated outcome score (WOMAC,\nKOOS, or equivalent) indicating moderate to severe impairment; (3) Failure of conservative management for a\nminimum of 6 months including physical therapy, pharmacological treatment, and at least one intra-articular\ninjection; (4) Patient BMI below 45 kg/m2. Coverage: 70% of allowed amount after deductible. Estimated patient\nresponsibility for in-network facility: $8,500. Authorization valid 90 days.",
+    "source_file": "medical_policy_bulletin.pdf",
+    "section_type": "policy",
+    "chunk_index": 1,
+    "procedure_codes": [
+      "27447"
+    ],
+    "metadata": {
+      "heading": "Policy ID: MPC-2024-ORTHO-001"
+    }
+  },
+  {
+    "id": 13,
+    "content": "Policy: Advanced Neuroimaging \u2014 Appropriate Use Criteria",
+    "source_file": "medical_policy_bulletin.pdf",
+    "section_type": "policy",
+    "chunk_index": 2,
+    "procedure_codes": [],
+    "metadata": {
+      "heading": "Policy: Advanced Neuroimaging \u2014 Appropriate Use Criteria"
+    }
+  },
+  {
+    "id": 14,
+    "content": "Policy ID: MPC-2024-NEURO-003\n\nApplicable Codes: CPT 70553 (MRI Brain with and without Contrast)\nBrain MRI with and without contrast is considered medically necessary for: (a) New onset seizures in adults; (b)\nSuspected intracranial neoplasm based on clinical presentation or abnormal CT findings; (c) Monitoring of known\nintracranial pathology at intervals recommended by treating specialist; (d) Evaluation of demyelinating disease\n(e.g., multiple sclerosis); (e) Pre-operative neurosurgical planning. NOT medically necessary for: routine evaluation\nof chronic headache without red flags, screening in asymptomatic patients, or repeat imaging without interval\nchange in symptoms. Coverage: 85% of allowed amount. Estimated patient out-of-pocket: $320. Prior\nauthorization required with clinical justification.",
+    "source_file": "medical_policy_bulletin.pdf",
+    "section_type": "policy",
+    "chunk_index": 3,
+    "procedure_codes": [
+      "70553"
+    ],
+    "metadata": {
+      "heading": "Policy ID: MPC-2024-NEURO-003"
+    }
+  },
+  {
+    "id": 15,
+    "content": "Policy ID: MPC-2024-ORTHO-005\n\nApplicable Codes: CPT 29881 (Arthroscopy, Knee, Surgical; with Meniscectomy)\nKnee arthroscopy with meniscectomy is considered medically necessary when: (1) MRI confirms meniscal tear\nwith clinical correlation; (2) Patient reports mechanical symptoms (locking, catching, giving way) for at least 6\nweeks; (3) Conservative management has failed (physical therapy, NSAIDs, activity modification). Special\nconsideration for patients over 50: when significant osteoarthritis is present on imaging, the provider must\ndocument that mechanical symptoms are primarily attributable to the meniscal pathology rather than the\ndegenerative joint disease. Coverage: 80% of allowed amount after deductible. Estimated patient responsibility:\n$2,200. Prior authorization required. MRI report must be submitted with the authorization request.",
+    "source_file": "medical_policy_bulletin.pdf",
+    "section_type": "policy",
+    "chunk_index": 4,
+    "procedure_codes": [
+      "29881"
+    ],
+    "metadata": {
+      "heading": "Policy ID: MPC-2024-ORTHO-005"
+    }
+  },
+  {
+    "id": 16,
+    "content": "Policy: Outpatient Psychotherapy \u2014 Benefit Parameters",
+    "source_file": "medical_policy_bulletin.pdf",
+    "section_type": "policy",
+    "chunk_index": 5,
+    "procedure_codes": [],
+    "metadata": {
+      "heading": "Policy: Outpatient Psychotherapy \u2014 Benefit Parameters"
+    }
+  },
+  {
+    "id": 17,
+    "content": "Policy ID: MPC-2024-BH-002\n\nApplicable Codes: CPT 90837 (Psychotherapy, 60 Minutes)\nOutpatient psychotherapy is covered under the mental health parity provision. 60-minute individual psychotherapy\nsessions (CPT 90837) are covered at 75% of the allowed amount with a $25 copay per session. Annual session\nlimit: 30 sessions per calendar year. Sessions beyond the annual limit require medical necessity review and\ndocumentation of treatment plan with measurable goals. No prior authorization required for sessions within the\nannual limit. Eligible provider types: licensed psychiatrists, psychologists, licensed clinical social workers (LCSW),\nand licensed professional counselors (LPC). Telehealth delivery is covered at the same rate as in-person visits.\nEstimated patient out-of-pocket per session: $50.",
+    "source_file": "medical_policy_bulletin.pdf",
+    "section_type": "policy",
+    "chunk_index": 6,
+    "procedure_codes": [
+      "90837"
+    ],
+    "metadata": {
+      "heading": "Policy ID: MPC-2024-BH-002"
+    }
+  },
+  {
+    "id": 18,
+    "content": "Policy: Upper Gastrointestinal Endoscopy \u2014 Coverage Criteria",
+    "source_file": "medical_policy_bulletin.pdf",
+    "section_type": "policy",
+    "chunk_index": 7,
+    "procedure_codes": [],
+    "metadata": {
+      "heading": "Policy: Upper Gastrointestinal Endoscopy \u2014 Coverage Criteria"
+    }
+  },
+  {
+    "id": 19,
+    "content": "Policy ID: MPC-2024-GI-001\n\nApplicable Codes: CPT 43239 (Upper GI Endoscopy with Biopsy)\nUpper GI endoscopy with biopsy is covered at 90% of allowed amount when performed for diagnostic evaluation\nof: persistent dysphagia, refractory GERD (failed 8-week PPI trial), suspected Barrett's esophagus, upper GI\nbleeding, unexplained iron deficiency anemia, or surveillance of known Barrett's esophagus per ACG guidelines.\nNo prior authorization required when clinical indication is documented. Estimated patient responsibility: $175.\nFacility-based procedure; non-facility setting not applicable. Repeat endoscopy within 12 months requires\ndocumentation of new or worsening symptoms.\nMediGuard Health Plan | Medical Policy Bulletin #MPB-2024-Q1 | Document ID: MPB-2024-Q1-v1.3 | Clinical Policy Department \u2014 Internal Use",
+    "source_file": "medical_policy_bulletin.pdf",
+    "section_type": "policy",
+    "chunk_index": 8,
+    "procedure_codes": [
+      "43239"
+    ],
+    "metadata": {
+      "heading": "Policy ID: MPC-2024-GI-001"
+    }
+  },
+  {
+    "id": 20,
+    "content": "[Plan Benefits Summary] MediGuard Health Plan \u2014 Summary of Benefits and\nCoverage\nPPO Plan | Group Policy #MG-2024-PPO-500 | Plan Year 2024\nPlan Overview\nThe MediGuard PPO 500 plan provides comprehensive medical coverage through a preferred provider network.\nMembers may see any licensed provider but will receive higher benefits when using in-network providers. This\nsummary provides an overview of your costs and coverage levels.\nCost Sharing\nBenefit Feature\nIn-Network\nOut-of-Network\nAnnual Deductible (Individual)\n$500\n$1,500\nAnnual Deductible (Family)\n$1,500\n$4,500\nOut-of-Pocket Maximum (Individual)\n$6,000\n$15,000\nOut-of-Pocket Maximum (Family)\n$12,000\n$30,000\nPrimary Care Office Visit Copay\n$25\n50% after deductible\nSpecialist Office Visit Copay\n$40\n50% after deductible\nEmergency Room Copay\n$250 (waived if admitted)\n$250 (waived if admitted)\nUrgent Care Copay\n$50\n$50\nCovered Services\nPreventive Care\nCovered at 100% in-network with no deductible. Includes annual physicals, immunizations, and age-appropriate\nscreenings per USPSTF guidelines.\nDiagnostic Lab & Pathology\nCovered at 100% in-network (CPT 36415 venipuncture, routine panels). No prior authorization required when\nordered by treating physician.\nDiagnostic Imaging\nCovered at 85-90% in-network after deductible. Chest X-ray (CPT 71046) covered at 90%. Advanced imaging\n(MRI, CT) may require prior authorization. Brain MRI with contrast (CPT 70553) requires prior authorization and\nclinical justification.\nSurgical Services\nCovered at 70-80% in-network after deductible. Major procedures such as total knee replacement (CPT 27447)\nrequire prior authorization and documentation of conservative treatment failure. Arthroscopic procedures (CPT",
+    "source_file": "plan_benefits_summary.pdf",
+    "section_type": "benefits",
+    "chunk_index": 0,
+    "procedure_codes": [
+      "27447",
+      "36415",
+      "70553",
+      "71046"
+    ],
+    "metadata": {
+      "section_heading": "",
+      "doc_title": "Plan Benefits Summary"
+    }
+  },
+  {
+    "id": 21,
+    "content": "[Plan Benefits Summary] in-network after deductible. Major procedures such as total knee replacement (CPT 27447)\nrequire prior authorization and documentation of conservative treatment failure. Arthroscopic procedures (CPT\n\n29881) require MRI confirmation.\nMental Health & Substance Abuse\nCovered under mental health parity. Outpatient psychotherapy (CPT 90837) covered at 75% with $25 copay. 30\nsession annual limit for outpatient psychotherapy. Inpatient mental health covered same as medical/surgical\ninpatient.\nCardiac Diagnostics\nECG/EKG (CPT 93000) covered at 100% as a diagnostic procedure. No prior authorization or referral required.\nStress tests and echocardiograms covered at 85% after deductible.\nGastrointestinal Procedures\nUpper GI endoscopy with biopsy (CPT 43239) covered at 90% when medically necessary. Covered under\npreventive benefit at 100% for age-appropriate colorectal cancer screening.\nExclusions and Limitations\nThis plan does not cover: cosmetic surgery (unless reconstructive after injury), experimental or investigational\ntreatments, services not medically necessary, custodial care, routine dental and vision (available as separate\nriders), services rendered by non-licensed providers, and charges exceeding the allowed amount for\nout-of-network services.\nMediGuard Health Plan | Summary of Benefits | Document ID: SBC-2024-PPO500-v2.0 | This is a summary only. Refer to your Evidence of\nCoverage for complete plan details.",
+    "source_file": "plan_benefits_summary.pdf",
+    "section_type": "benefits",
+    "chunk_index": 1,
+    "procedure_codes": [
+      "27447",
+      "29881",
+      "43239",
+      "90837",
+      "93000"
+    ],
+    "metadata": {
+      "section_heading": "",
+      "doc_title": "Plan Benefits Summary"
+    }
+  },
+  {
+    "id": 22,
+    "content": "[CPT Code | Procedure | Coverage Details]\n99213",
+    "source_file": "policy_coverage_schedule.pdf",
+    "section_type": "coverage_table",
+    "chunk_index": 0,
+    "procedure_codes": [
+      "99213"
+    ],
+    "metadata": {
+      "source_line": "99213",
+      "table_header": "CPT Code | Procedure | Coverage Details"
+    }
+  },
+  {
+    "id": 23,
+    "content": "[CPT Code | Procedure | Coverage Details]\n99214",
+    "source_file": "policy_coverage_schedule.pdf",
+    "section_type": "coverage_table",
+    "chunk_index": 1,
+    "procedure_codes": [
+      "99214"
+    ],
+    "metadata": {
+      "source_line": "99214",
+      "table_header": "CPT Code | Procedure | Coverage Details"
+    }
+  },
+  {
+    "id": 24,
+    "content": "[CPT Code | Procedure | Coverage Details]\n27447",
+    "source_file": "policy_coverage_schedule.pdf",
+    "section_type": "coverage_table",
+    "chunk_index": 2,
+    "procedure_codes": [
+      "27447"
+    ],
+    "metadata": {
+      "source_line": "27447",
+      "table_header": "CPT Code | Procedure | Coverage Details"
+    }
+  },
+  {
+    "id": 25,
+    "content": "[CPT Code | Procedure | Coverage Details]\n70553",
+    "source_file": "policy_coverage_schedule.pdf",
+    "section_type": "coverage_table",
+    "chunk_index": 3,
+    "procedure_codes": [
+      "70553"
+    ],
+    "metadata": {
+      "source_line": "70553",
+      "table_header": "CPT Code | Procedure | Coverage Details"
+    }
+  },
+  {
+    "id": 26,
+    "content": "[CPT Code | Procedure | Coverage Details]\n43239",
+    "source_file": "policy_coverage_schedule.pdf",
+    "section_type": "coverage_table",
+    "chunk_index": 4,
+    "procedure_codes": [
+      "43239"
+    ],
+    "metadata": {
+      "source_line": "43239",
+      "table_header": "CPT Code | Procedure | Coverage Details"
+    }
+  },
+  {
+    "id": 27,
+    "content": "[CPT Code | Procedure | Coverage Details]\n93000",
+    "source_file": "policy_coverage_schedule.pdf",
+    "section_type": "coverage_table",
+    "chunk_index": 5,
+    "procedure_codes": [
+      "93000"
+    ],
+    "metadata": {
+      "source_line": "93000",
+      "table_header": "CPT Code | Procedure | Coverage Details"
+    }
+  },
+  {
+    "id": 28,
+    "content": "[CPT Code | Procedure | Coverage Details]\n90837",
+    "source_file": "policy_coverage_schedule.pdf",
+    "section_type": "coverage_table",
+    "chunk_index": 6,
+    "procedure_codes": [
+      "90837"
+    ],
+    "metadata": {
+      "source_line": "90837",
+      "table_header": "CPT Code | Procedure | Coverage Details"
+    }
+  },
+  {
+    "id": 29,
+    "content": "[CPT Code | Procedure | Coverage Details]\n29881",
+    "source_file": "policy_coverage_schedule.pdf",
+    "section_type": "coverage_table",
+    "chunk_index": 7,
+    "procedure_codes": [
+      "29881"
+    ],
+    "metadata": {
+      "source_line": "29881",
+      "table_header": "CPT Code | Procedure | Coverage Details"
+    }
+  },
+  {
+    "id": 30,
+    "content": "[CPT Code | Procedure | Coverage Details]\n36415",
+    "source_file": "policy_coverage_schedule.pdf",
+    "section_type": "coverage_table",
+    "chunk_index": 8,
+    "procedure_codes": [
+      "36415"
+    ],
+    "metadata": {
+      "source_line": "36415",
+      "table_header": "CPT Code | Procedure | Coverage Details"
+    }
+  },
+  {
+    "id": 31,
+    "content": "[CPT Code | Procedure | Coverage Details]\n71046",
+    "source_file": "policy_coverage_schedule.pdf",
+    "section_type": "coverage_table",
+    "chunk_index": 9,
+    "procedure_codes": [
+      "71046"
+    ],
+    "metadata": {
+      "source_line": "71046",
+      "table_header": "CPT Code | Procedure | Coverage Details"
+    }
+  },
+  {
+    "id": 32,
+    "content": "CPT 27447 \u2014 Total Knee Replacement (Total Knee Arthroplasty)\n\nClinical Criteria for Authorization:\n1. Patient must be 50 years of age or older, or have documented post-traumatic arthritis.\n2. Documentation of at least 6 months of conservative treatment failure, including physical therapy (minimum 12\nsessions), NSAIDs or analgesic medication trial, and at least one corticosteroid injection.\n3. Radiographic evidence of moderate to severe osteoarthritis (Kellgren-Lawrence grade III or IV).\n4. Functional impairment documented by validated outcome measure (e.g., WOMAC score, KOOS).\n5. BMI must be below 45 kg/m2. Patients with BMI 40-45 require additional surgical risk assessment.\nRequired Documentation: Orthopedic consultation notes, imaging reports (X-ray within 6 months, MRI if\navailable), physical therapy records, medication history, BMI documentation.\nReview Turnaround: Standard: 5 business days. Peer-to-peer review available within 48 hours of adverse\ndetermination.\nAuthorization Validity: Authorization valid for 90 days from date of approval.",
+    "source_file": "prior_auth_guidelines.pdf",
+    "section_type": "prior_auth",
+    "chunk_index": 0,
+    "procedure_codes": [
+      "27447"
+    ],
+    "metadata": {
+      "heading": "CPT 27447 \u2014 Total Knee Replacement (Total Knee Arthroplasty)"
+    }
+  },
+  {
+    "id": 33,
+    "content": "CPT 70553 \u2014 Brain MRI with and without Contrast\n\nClinical Criteria for Authorization:\n1. Clinical justification required: new onset neurological symptoms (seizures, focal deficits, severe headache with\nred flags), suspected intracranial mass or lesion, follow-up of known intracranial pathology, or pre-surgical\nplanning.\n2. Prior non-contrast CT or initial MRI must be documented if request is for follow-up imaging.\n3. Contrast component must be justified: suspected tumor, infection, demyelinating disease, or vascular\nmalformation.\n4. Routine headache without red flags does not meet criteria for contrast-enhanced MRI.\nRequired Documentation: Ordering physician's clinical notes, prior imaging reports if applicable, neurological\nexamination findings.\nReview Turnaround: Standard: 3 business days. Expedited review for suspected malignancy: 24 hours.\nAuthorization Validity: Authorization valid for 60 days from date of approval.",
+    "source_file": "prior_auth_guidelines.pdf",
+    "section_type": "prior_auth",
+    "chunk_index": 1,
+    "procedure_codes": [
+      "70553"
+    ],
+    "metadata": {
+      "heading": "CPT 70553 \u2014 Brain MRI with and without Contrast"
+    }
+  },
+  {
+    "id": 34,
+    "content": "CPT 29881 \u2014 Knee Arthroscopy with Meniscectomy\n\nClinical Criteria for Authorization:\n1. MRI results must confirm meniscal tear (must be submitted with authorization request).\n2. Patient must have failed at least 6 weeks of conservative management including rest, ice, compression, physical\ntherapy, and anti-inflammatory medication.\n3. Mechanical symptoms (locking, catching, giving way) must be documented.\n4. For patients over 50 with concomitant osteoarthritis, authorization requires documentation that the mechanical\nsymptoms are primarily attributable to the meniscal tear.\nRequired Documentation: MRI report with radiologist interpretation, orthopedic evaluation notes, physical therapy\nrecords, documentation of conservative treatment timeline.\nReview Turnaround: Standard: 5 business days.\nAuthorization Validity: Authorization valid for 60 days from date of approval.\nAppeal Process\nIf a prior authorization request is denied, the requesting provider or member may submit an appeal within 180 days\nof the adverse determination. First-level appeals are reviewed by a physician reviewer who was not involved in the\ninitial decision. Second-level appeals are reviewed by an external independent review organization (IRO).\nMediGuard Health Plan | Prior Auth Guidelines | Document ID: PA-GUIDE-2024-v4.1 | For Utilization Management Use",
+    "source_file": "prior_auth_guidelines.pdf",
+    "section_type": "prior_auth",
+    "chunk_index": 2,
+    "procedure_codes": [
+      "29881"
+    ],
+    "metadata": {
+      "heading": "CPT 29881 \u2014 Knee Arthroscopy with Meniscectomy"
+    }
+  }
+]

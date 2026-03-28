@@ -1,7 +1,7 @@
 """PDF ingestion pipeline for the insurance RAG agent.
 
 Parses legacy insurance PDFs, applies policy-aware chunking, generates
-embeddings via Insforge, and stores everything in Insforge Postgres (pgvector).
+embeddings via Insforge, and stores everything locally in JSON files.
 
 Usage:
     python insurance/ingest.py
@@ -20,9 +20,13 @@ import fitz  # pymupdf
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from shared.ai import generate_embeddings
-from shared.db import execute_sql
 
 PDF_DIR = Path(__file__).parent / "fixtures" / "pdfs"
+DATA_DIR = Path(__file__).parent / "data"
+
+# Local storage files
+DOCUMENTS_FILE = DATA_DIR / "documents.json"
+EMBEDDINGS_FILE = DATA_DIR / "embeddings.json"
 
 # Embedding batch size — stay well within Insforge rate limits
 BATCH_SIZE = 20
@@ -45,79 +49,47 @@ KNOWN_CPT_CODES = {
 }
 
 
-# ── Database setup ─────────────────────────────────────────────────────
+# ── Local storage helpers ──────────────────────────────────────────────
 
-SETUP_SQL = [
-    "CREATE EXTENSION IF NOT EXISTS vector;",
-
-    """
-    DROP TABLE IF EXISTS insurance_documents;
-    """,
-
-    """
-    CREATE TABLE insurance_documents (
-        id BIGSERIAL PRIMARY KEY,
-        content TEXT NOT NULL,
-        source_file TEXT NOT NULL,
-        section_type TEXT NOT NULL,
-        chunk_index INTEGER NOT NULL,
-        procedure_codes TEXT[] DEFAULT '{}',
-        embedding vector(1536),
-        metadata JSONB DEFAULT '{}',
-        created_at TIMESTAMPTZ DEFAULT now()
-    );
-    """,
-
-    """
-    CREATE INDEX ON insurance_documents
-    USING hnsw (embedding vector_cosine_ops);
-    """,
-
-    """
-    CREATE INDEX ON insurance_documents (section_type);
-    """,
-
-    """
-    CREATE INDEX ON insurance_documents USING gin (procedure_codes);
-    """,
-
-    """
-    CREATE OR REPLACE FUNCTION match_insurance_docs(
-        query_embedding vector(1536),
-        match_count INT DEFAULT 5,
-        match_threshold FLOAT DEFAULT 0.70
-    )
-    RETURNS TABLE (
-        id BIGINT,
-        content TEXT,
-        source_file TEXT,
-        section_type TEXT,
-        procedure_codes TEXT[],
-        similarity FLOAT
-    )
-    LANGUAGE sql STABLE
-    AS $$
-        SELECT
-            id,
-            content,
-            source_file,
-            section_type,
-            procedure_codes,
-            1 - (embedding <=> query_embedding) AS similarity
-        FROM insurance_documents
-        WHERE 1 - (embedding <=> query_embedding) > match_threshold
-        ORDER BY embedding <=> query_embedding
-        LIMIT match_count;
-    $$;
-    """,
-]
+def _load_documents() -> list[dict]:
+    """Load documents from local JSON file."""
+    if not DOCUMENTS_FILE.exists():
+        return []
+    with open(DOCUMENTS_FILE, 'r') as f:
+        return json.load(f)
 
 
-async def setup_database():
-    print("Setting up database schema...")
-    for sql in SETUP_SQL:
-        await execute_sql(sql.strip())
-    print("  Schema ready.")
+def _save_documents(documents: list[dict]):
+    """Save documents to local JSON file."""
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    with open(DOCUMENTS_FILE, 'w') as f:
+        json.dump(documents, f, indent=2)
+
+
+def _load_embeddings() -> dict[str, list[float]]:
+    """Load embeddings from local JSON file."""
+    if not EMBEDDINGS_FILE.exists():
+        return {}
+    with open(EMBEDDINGS_FILE, 'r') as f:
+        return json.load(f)
+
+
+def _save_embeddings(embeddings: dict[str, list[float]]):
+    """Save embeddings to local JSON file."""
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    with open(EMBEDDINGS_FILE, 'w') as f:
+        json.dump(embeddings, f)
+
+
+def setup_local_storage():
+    """Clear local storage for fresh ingestion."""
+    print("Setting up local storage...")
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    if DOCUMENTS_FILE.exists():
+        DOCUMENTS_FILE.unlink()
+    if EMBEDDINGS_FILE.exists():
+        EMBEDDINGS_FILE.unlink()
+    print("  Local storage ready.")
 
 
 # ── CPT code extraction ────────────────────────────────────────────────
@@ -315,35 +287,48 @@ def parse_and_chunk(pdf_path: Path) -> list[dict]:
 # ── Embedding + storage ────────────────────────────────────────────────
 
 async def embed_and_store(chunks: list[dict]):
-    """Batch-embed all chunks via Insforge and insert into Postgres."""
+    """Batch-embed all chunks via Insforge and store locally in JSON files.
+    
+    Documents and embeddings are both stored locally - no PostgreSQL needed.
+    """
     total = len(chunks)
     stored = 0
+    
+    # Load existing documents and embeddings
+    documents = _load_documents()
+    embeddings = _load_embeddings()
+    
+    # Start from the next ID
+    next_id = len(documents) + 1
 
     for batch_start in range(0, total, BATCH_SIZE):
         batch = chunks[batch_start: batch_start + BATCH_SIZE]
         texts = [c["content"] for c in batch]
 
-        embeddings = await generate_embeddings(texts)
+        batch_embeddings = await generate_embeddings(texts)
 
-        for chunk, embedding in zip(batch, embeddings):
-            await execute_sql(
-                """
-                INSERT INTO insurance_documents
-                    (content, source_file, section_type, chunk_index,
-                     procedure_codes, embedding, metadata)
-                VALUES ($1, $2, $3, $4, $5, $6::vector, $7)
-                """,
-                [
-                    chunk["content"],
-                    chunk["source_file"],
-                    chunk["section_type"],
-                    chunk["chunk_index"],
-                    chunk["procedure_codes"],
-                    json.dumps(embedding),   # Insforge expects JSON array for vector
-                    json.dumps(chunk["metadata"]),
-                ],
-            )
+        for chunk, embedding in zip(batch, batch_embeddings):
+            # Create document with local ID
+            doc = {
+                "id": next_id,
+                "content": chunk["content"],
+                "source_file": chunk["source_file"],
+                "section_type": chunk["section_type"],
+                "chunk_index": chunk["chunk_index"],
+                "procedure_codes": chunk["procedure_codes"],
+                "metadata": chunk["metadata"],
+            }
+            documents.append(doc)
+            
+            # Save embedding with the same ID
+            embeddings[str(next_id)] = embedding
+            
+            next_id += 1
             stored += 1
+        
+        # Save after each batch
+        _save_documents(documents)
+        _save_embeddings(embeddings)
 
         print(f"  Stored {stored}/{total} chunks...")
 
@@ -357,7 +342,7 @@ async def run_ingestion():
     print("MediGuardAI — Insurance PDF Ingestion Pipeline")
     print("=" * 55)
 
-    await setup_database()
+    setup_local_storage()
 
     pdfs = sorted(PDF_DIR.glob("*.pdf"))
     if not pdfs:
@@ -373,11 +358,13 @@ async def run_ingestion():
         all_chunks.extend(chunks)
 
     print(f"\nTotal chunks: {len(all_chunks)}")
-    print(f"Embedding and storing via Insforge (batch size {BATCH_SIZE})...")
+    print(f"Generating embeddings and storing locally (batch size {BATCH_SIZE})...")
     stored = await embed_and_store(all_chunks)
 
-    print(f"\nIngestion complete. {stored} chunks stored in Insforge Postgres.")
-    print("Run 'python insurance/ingest.py' again to re-ingest after PDF changes.")
+    print(f"\nIngestion complete. {stored} chunks stored locally.")
+    print(f"  Documents: {DOCUMENTS_FILE}")
+    print(f"  Embeddings: {EMBEDDINGS_FILE}")
+    print("\nRun 'python insurance/ingest.py' again to re-ingest after PDF changes.")
 
 
 if __name__ == "__main__":
