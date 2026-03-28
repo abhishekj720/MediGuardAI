@@ -14,8 +14,7 @@ load_dotenv()
 INSFORGE_API_KEY = os.getenv("INSFORGE_API_KEY", "")
 INSFORGE_API_BASE_URL = os.getenv("INSFORGE_API_BASE_URL", "http://localhost:7130")
 
-DEFAULT_MODEL = "anthropic/claude-sonnet-4.5"
-
+DEFAULT_MODEL = "anthropic/claude-sonnet-4.6"
 
 async def chat_completion(
     messages: list[dict],
@@ -28,6 +27,10 @@ async def chat_completion(
 
     Returns the response content as a string.
     """
+    # Read env vars at call time to support dynamic configuration
+    api_key = os.getenv("INSFORGE_API_KEY", INSFORGE_API_KEY)
+    base_url = os.getenv("INSFORGE_API_BASE_URL", INSFORGE_API_BASE_URL)
+
     payload: dict = {
         "model": model,
         "messages": messages,
@@ -39,9 +42,9 @@ async def chat_completion(
 
     async with httpx.AsyncClient(timeout=60.0) as client:
         response = await client.post(
-            f"{INSFORGE_API_BASE_URL}/api/ai/chat/completion",
+            f"{base_url}/api/ai/chat/completion",
             headers={
-                "Authorization": f"Bearer {INSFORGE_API_KEY}",
+                "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
             },
             json=payload,
