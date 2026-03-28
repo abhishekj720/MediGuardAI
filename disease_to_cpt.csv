@@ -1,0 +1,11 @@
+disease_name,cpt_code,confidence
+MRI Brain,70553,0.95
+CT Scan Chest,71250,0.92
+X-Ray Chest,71020,0.98
+Blood Test,80053,0.99
+Echocardiogram,93306,0.94
+Colonoscopy,45378,0.96
+Mammogram,77067,0.97
+Ultrasound Abdomen,76700,0.93
+Stress Test,93015,0.91
+PET Scan,78813,0.89
