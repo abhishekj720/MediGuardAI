@@ -68,5 +68,12 @@
     "out_of_pocket_estimate": 25.00,
     "prior_auth_required": false,
     "notes": "Covered under diagnostic imaging benefit."
+  },
+  "72148": {
+    "procedure_name": "MRI Lumbar Spine without Contrast",
+    "coverage_percent": 80,
+    "out_of_pocket_estimate": 400.00,
+    "prior_auth_required": false,
+    "notes": "No prior authorization required for diagnostic imaging of lumbar spine."
   }
 }
