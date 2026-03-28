@@ -1,13 +1,9 @@
 import json
-import os
 from datetime import datetime, timezone
 
-from anthropic import Anthropic
-from dotenv import load_dotenv
-
 from insurance.agent import get_insurance_quote
-from orchestrator.tools import TOOLS
 from patient.agent import explain_to_patient
+from shared.ai import chat_completion_json
 from shared.schemas import (
     AgentTraceStep,
     DemoRequest,
@@ -15,23 +11,24 @@ from shared.schemas import (
     InsuranceQuote,
 )
 
-load_dotenv()
-
-client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-
 ORCHESTRATOR_SYSTEM_PROMPT = """You are a medical workflow orchestrator. Your job is to coordinate
 between an insurance verification agent and a patient communication agent to process a doctor's
 visit efficiently.
 
-When you receive a doctor's note with a procedure code and patient ID, you should:
-1. FIRST call the insurance agent to get coverage information for the procedure
-2. THEN call the patient agent with the doctor's notes AND the insurance quote to generate
-   a patient-friendly explanation
+When you receive a doctor's note with a procedure code and patient ID, decide what to do next.
 
-Always call the insurance agent before the patient agent, because the patient explanation
-needs the insurance information to be complete and accurate.
+You MUST respond with a JSON object indicating which action to take:
 
-Be systematic and thorough. Process one step at a time."""
+Step 1 - First, call the insurance agent:
+{"action": "call_insurance_agent", "procedure_code": "<code>", "patient_id": "<id>"}
+
+Step 2 - After receiving insurance results, call the patient agent:
+{"action": "call_patient_agent", "doctor_notes": "<notes>", "insurance_quote": <quote_object>}
+
+Step 3 - When both agents have returned results:
+{"action": "done", "summary": "Brief summary of what was processed"}
+
+Always call insurance FIRST, then patient. Respond with exactly one JSON object per turn."""
 
 
 async def run_orchestrator(request: DemoRequest) -> DemoResponse:
@@ -49,112 +46,86 @@ async def run_orchestrator(request: DemoRequest) -> DemoResponse:
         )
     )
 
-    user_message = (
-        f"Process this medical visit:\n\n"
-        f"Doctor's Notes: {request.doctor_notes}\n\n"
-        f"Procedure Code: {request.procedure_code}\n"
-        f"Patient ID: {request.patient_id}\n\n"
-        f"Please coordinate the insurance check and patient explanation."
+    # Step 1: Ask orchestrator what to do first
+    messages = [
+        {
+            "role": "user",
+            "content": (
+                f"Process this medical visit:\n\n"
+                f"Doctor's Notes: {request.doctor_notes}\n\n"
+                f"Procedure Code: {request.procedure_code}\n"
+                f"Patient ID: {request.patient_id}\n\n"
+                f"What is the first step?"
+            ),
+        }
+    ]
+
+    decision = await chat_completion_json(
+        messages=messages,
+        system_prompt=ORCHESTRATOR_SYSTEM_PROMPT,
     )
 
-    messages = [{"role": "user", "content": user_message}]
-
-    insurance_quote: InsuranceQuote | None = None
-    patient_summary = None
-
-    # Agentic loop — let Claude decide tool calls
-    while True:
-        response = client.messages.create(
-            model="claude-sonnet-4-6",
-            max_tokens=1024,
-            system=ORCHESTRATOR_SYSTEM_PROMPT,
-            tools=TOOLS,
-            messages=messages,
+    # Step 2: Execute insurance lookup
+    trace.append(
+        AgentTraceStep(
+            agent_name="insurance",
+            action="lookup",
+            input_summary=f"CPT: {request.procedure_code}, Patient: {request.patient_id}",
+            output_summary="Looking up coverage...",
+            timestamp=datetime.now(timezone.utc),
         )
+    )
 
-        # Check if we're done (no more tool calls)
-        if response.stop_reason == "end_turn":
-            break
+    insurance_quote = get_insurance_quote(
+        decision.get("procedure_code", request.procedure_code),
+        decision.get("patient_id", request.patient_id),
+    )
 
-        # Process tool calls
-        tool_results = []
-        for block in response.content:
-            if block.type == "tool_use":
-                if block.name == "call_insurance_agent":
-                    trace.append(
-                        AgentTraceStep(
-                            agent_name="insurance",
-                            action="lookup",
-                            input_summary=f"CPT: {block.input['procedure_code']}, Patient: {block.input['patient_id']}",
-                            output_summary="Looking up coverage...",
-                            timestamp=datetime.now(timezone.utc),
-                        )
-                    )
+    trace[-1].output_summary = (
+        f"Coverage: {insurance_quote.coverage_percent}%, "
+        f"OOP: ${insurance_quote.out_of_pocket_estimate:.2f}, "
+        f"Prior Auth: {'Yes' if insurance_quote.prior_auth_required else 'No'}"
+    )
 
-                    insurance_quote = get_insurance_quote(
-                        block.input["procedure_code"],
-                        block.input["patient_id"],
-                    )
+    # Step 3: Ask orchestrator for next step (with insurance results)
+    messages.append({"role": "assistant", "content": json.dumps(decision)})
+    messages.append(
+        {
+            "role": "user",
+            "content": (
+                f"Insurance agent returned:\n"
+                f"{insurance_quote.model_dump_json(indent=2)}\n\n"
+                f"What is the next step?"
+            ),
+        }
+    )
 
-                    trace[-1].output_summary = (
-                        f"Coverage: {insurance_quote.coverage_percent}%, "
-                        f"OOP: ${insurance_quote.out_of_pocket_estimate:.2f}, "
-                        f"Prior Auth: {'Yes' if insurance_quote.prior_auth_required else 'No'}"
-                    )
+    decision2 = await chat_completion_json(
+        messages=messages,
+        system_prompt=ORCHESTRATOR_SYSTEM_PROMPT,
+    )
 
-                    tool_results.append(
-                        {
-                            "type": "tool_result",
-                            "tool_use_id": block.id,
-                            "content": insurance_quote.model_dump_json(),
-                        }
-                    )
-
-                elif block.name == "call_patient_agent":
-                    trace.append(
-                        AgentTraceStep(
-                            agent_name="patient",
-                            action="explain",
-                            input_summary="Generating patient-friendly explanation",
-                            output_summary="Processing...",
-                            timestamp=datetime.now(timezone.utc),
-                        )
-                    )
-
-                    quote_data = json.loads(block.input["insurance_quote_json"])
-                    quote = InsuranceQuote(**quote_data)
-
-                    patient_summary = await explain_to_patient(
-                        block.input["doctor_notes"],
-                        quote,
-                    )
-
-                    trace[-1].output_summary = (
-                        f"Generated summary with {len(patient_summary.key_points)} key points"
-                    )
-
-                    tool_results.append(
-                        {
-                            "type": "tool_result",
-                            "tool_use_id": block.id,
-                            "content": patient_summary.model_dump_json(),
-                        }
-                    )
-
-        # Add assistant response and tool results to conversation
-        messages.append({"role": "assistant", "content": response.content})
-        messages.append({"role": "user", "content": tool_results})
-
-    # Fallback if orchestrator didn't call agents (shouldn't happen)
-    if insurance_quote is None:
-        insurance_quote = get_insurance_quote(
-            request.procedure_code, request.patient_id
+    # Step 4: Execute patient explanation
+    trace.append(
+        AgentTraceStep(
+            agent_name="patient",
+            action="explain",
+            input_summary="Generating patient-friendly explanation",
+            output_summary="Processing...",
+            timestamp=datetime.now(timezone.utc),
         )
-    if patient_summary is None:
-        patient_summary = await explain_to_patient(
-            request.doctor_notes, insurance_quote
-        )
+    )
 
+    patient_summary = await explain_to_patient(
+        request.doctor_notes,
+        insurance_quote,
+    )
+
+    trace[-1].output_summary = (
+        f"Generated summary with {len(patient_summary.key_points)} key points"
+    )
+
+    # Done
     trace.append(
         AgentTraceStep(
             agent_name="orchestrator",

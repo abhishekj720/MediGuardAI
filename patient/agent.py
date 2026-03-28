@@ -1,13 +1,5 @@
-import os
-
-from anthropic import Anthropic
-from dotenv import load_dotenv
-
+from shared.ai import chat_completion_json
 from shared.schemas import InsuranceQuote, PatientSummary
-
-load_dotenv()
-
-client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 PATIENT_SYSTEM_PROMPT = """You are a compassionate medical communication assistant. Your job is to take
 clinical doctor notes and insurance information, then explain everything to the patient in plain,
@@ -52,33 +44,10 @@ Here is the insurance coverage information:
 
 Please explain all of this to the patient in plain language. Return your response as JSON."""
 
-    response = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=1024,
-        system=PATIENT_SYSTEM_PROMPT,
+    parsed = await chat_completion_json(
         messages=[{"role": "user", "content": user_message}],
+        system_prompt=PATIENT_SYSTEM_PROMPT,
     )
-
-    import json
-
-    response_text = response.content[0].text
-
-    # Parse the JSON response
-    try:
-        parsed = json.loads(response_text)
-    except json.JSONDecodeError:
-        # Try to extract JSON from markdown code blocks
-        if "```json" in response_text:
-            json_str = response_text.split("```json")[1].split("```")[0].strip()
-            parsed = json.loads(json_str)
-        elif "```" in response_text:
-            json_str = response_text.split("```")[1].split("```")[0].strip()
-            parsed = json.loads(json_str)
-        else:
-            parsed = {
-                "summary": response_text,
-                "key_points": ["Please review the full summary above."],
-            }
 
     return PatientSummary(
         summary=parsed["summary"],
