@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
-import { fetchProcedures, fetchPatients, submitDemo } from "../api/client";
+import { fetchProcedures, fetchPatients, submitDemo, createVisit } from "../api/client";
+import { useAuth } from "../contexts/AuthContext";
 import AgentTrace from "../components/AgentTrace";
 import SearchableSelect from "../components/SearchableSelect";
 import type { DemoResponse, Procedure, Patient } from "../types";
 
 export default function DoctorPortal() {
+  const { user } = useAuth();
   const [procedures, setProcedures] = useState<Procedure[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [doctorNotes, setDoctorNotes] = useState("");
@@ -13,6 +15,7 @@ export default function DoctorPortal() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<DemoResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   useEffect(() => {
     // Fetch procedures and patients independently so one failure doesn't block the other
@@ -35,14 +38,28 @@ export default function DoctorPortal() {
     setLoading(true);
     setError(null);
     setResult(null);
+    setSaveSuccess(false);
 
     try {
+      // Run the demo orchestration
       const res = await submitDemo({
         doctor_notes: doctorNotes,
         procedure_code: procedureCode,
         patient_id: patientId,
       });
       setResult(res);
+
+      // Save visit to database (clinical notes become patient-facing notes)
+      if (user) {
+        await createVisit({
+          patient_id: patientId,
+          doctor_id: user.id,
+          procedure_code: procedureCode,
+          diagnosis: procedureCode, // Use procedure code as diagnosis for simplicity
+          release_notes: doctorNotes, // Clinical notes are what patient sees
+        });
+        setSaveSuccess(true);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -97,12 +114,12 @@ export default function DoctorPortal() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Clinical Notes
+                Clinical Notes (Patient will see this)
               </label>
               <textarea
                 value={doctorNotes}
                 onChange={(e) => setDoctorNotes(e.target.value)}
-                placeholder="Enter clinical notes for this visit..."
+                placeholder="Enter clinical notes for this visit - these will be visible to the patient..."
                 rows={6}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 required
@@ -121,6 +138,12 @@ export default function DoctorPortal() {
           {error && (
             <div className="mt-4 bg-red-50 border border-red-200 rounded-md p-4 text-sm text-red-700">
               {error}
+            </div>
+          )}
+
+          {saveSuccess && (
+            <div className="mt-4 bg-green-50 border border-green-200 rounded-md p-4 text-sm text-green-700">
+              ✓ Visit saved successfully! Patient can now view diagnosis and release notes.
             </div>
           )}
 

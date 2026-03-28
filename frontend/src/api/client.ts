@@ -1,8 +1,8 @@
 import type { DemoRequest, DemoResponse, Procedure, Patient } from "../types";
 import { insforge } from "../lib/insforge";
 
-// Backend API base URL - uses environment variable or defaults to same origin
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api";
+// InsForge Edge Function URL for MedGuardAI API
+const API_BASE = "https://em6x2e4c.functions.insforge.app/mediguard-api/api";
 
 export async function fetchProcedures(): Promise<Procedure[]> {
   const res = await fetch(`${API_BASE}/procedures`);
@@ -53,4 +53,57 @@ export async function submitDemo(request: DemoRequest): Promise<DemoResponse> {
     throw new Error(`Demo request failed: ${detail}`);
   }
   return res.json();
+}
+
+export interface Visit {
+  id: string;
+  patient_id: string;
+  doctor_id: string;
+  procedure_code: string;
+  diagnosis: string;
+  release_notes: string;
+  visit_date: string;
+  created_at: string;
+}
+
+export async function createVisit(visit: {
+  patient_id: string;
+  doctor_id: string;
+  procedure_code: string;
+  diagnosis: string;
+  release_notes: string;
+}): Promise<Visit> {
+  // Write directly to InsForge database using SDK
+  const { data, error } = await insforge.database
+    .from('patient_visits')
+    .insert([{
+      patient_id: visit.patient_id,
+      doctor_id: visit.doctor_id,
+      procedure_code: visit.procedure_code,
+      diagnosis: visit.diagnosis,
+      release_notes: visit.release_notes,
+      visit_date: new Date().toISOString()
+    }])
+    .select();
+  
+  if (error) {
+    throw new Error(`Failed to create visit: ${error.message}`);
+  }
+  
+  return data?.[0] as Visit;
+}
+
+export async function fetchVisits(patientId: string): Promise<Visit[]> {
+  // Read directly from InsForge database using SDK
+  const { data, error } = await insforge.database
+    .from('patient_visits')
+    .select('*')
+    .eq('patient_id', patientId)
+    .order('visit_date', { ascending: false });
+  
+  if (error) {
+    throw new Error(`Failed to fetch visits: ${error.message}`);
+  }
+  
+  return (data || []) as Visit[];
 }
