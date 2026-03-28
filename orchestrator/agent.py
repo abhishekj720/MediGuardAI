@@ -17,7 +17,8 @@ visit efficiently.
 
 When you receive a doctor's note with a procedure code and patient ID, decide what to do next.
 
-You MUST respond with a JSON object indicating which action to take:
+CRITICAL: You MUST respond with ONLY a JSON object. No markdown, no explanations, no code blocks.
+Just raw JSON.
 
 Step 1 - First, call the insurance agent:
 {"action": "call_insurance_agent", "procedure_code": "<code>", "patient_id": "<id>"}
@@ -28,44 +29,30 @@ Step 2 - After receiving insurance results, call the patient agent:
 Step 3 - When both agents have returned results:
 {"action": "done", "summary": "Brief summary of what was processed"}
 
-Always call insurance FIRST, then patient. Respond with exactly one JSON object per turn."""
+Always call insurance FIRST, then patient. Return ONLY raw JSON, nothing else."""
 
 
 async def run_orchestrator(request: DemoRequest) -> DemoResponse:
-    """Run the full orchestration flow: insurance lookup -> patient explanation."""
+    """Run the full orchestration flow: insurance lookup -> patient explanation.
+    
+    This is a deterministic sequential orchestrator - no LLM decision making.
+    The flow is always: Insurance Agent -> Patient Agent.
+    """
 
     trace: list[AgentTraceStep] = []
 
+    # Step 1: Start orchestration
     trace.append(
         AgentTraceStep(
             agent_name="orchestrator",
             action="start",
             input_summary=f"Processing procedure {request.procedure_code} for patient {request.patient_id}",
-            output_summary="Starting orchestration flow",
+            output_summary="Starting orchestration flow: Insurance -> Patient",
             timestamp=datetime.now(timezone.utc),
         )
     )
 
-    # Step 1: Ask orchestrator what to do first
-    messages = [
-        {
-            "role": "user",
-            "content": (
-                f"Process this medical visit:\n\n"
-                f"Doctor's Notes: {request.doctor_notes}\n\n"
-                f"Procedure Code: {request.procedure_code}\n"
-                f"Patient ID: {request.patient_id}\n\n"
-                f"What is the first step?"
-            ),
-        }
-    ]
-
-    decision = await chat_completion_json(
-        messages=messages,
-        system_prompt=ORCHESTRATOR_SYSTEM_PROMPT,
-    )
-
-    # Step 2: Execute insurance lookup
+    # Step 2: Execute insurance lookup (deterministic, no LLM)
     trace.append(
         AgentTraceStep(
             agent_name="insurance",
@@ -77,8 +64,8 @@ async def run_orchestrator(request: DemoRequest) -> DemoResponse:
     )
 
     insurance_quote = get_insurance_quote(
-        decision.get("procedure_code", request.procedure_code),
-        decision.get("patient_id", request.patient_id),
+        request.procedure_code,
+        request.patient_id,
     )
 
     trace[-1].output_summary = (
@@ -87,25 +74,7 @@ async def run_orchestrator(request: DemoRequest) -> DemoResponse:
         f"Prior Auth: {'Yes' if insurance_quote.prior_auth_required else 'No'}"
     )
 
-    # Step 3: Ask orchestrator for next step (with insurance results)
-    messages.append({"role": "assistant", "content": json.dumps(decision)})
-    messages.append(
-        {
-            "role": "user",
-            "content": (
-                f"Insurance agent returned:\n"
-                f"{insurance_quote.model_dump_json(indent=2)}\n\n"
-                f"What is the next step?"
-            ),
-        }
-    )
-
-    decision2 = await chat_completion_json(
-        messages=messages,
-        system_prompt=ORCHESTRATOR_SYSTEM_PROMPT,
-    )
-
-    # Step 4: Execute patient explanation
+    # Step 3: Execute patient explanation (uses LLM for plain language)
     trace.append(
         AgentTraceStep(
             agent_name="patient",
@@ -125,7 +94,7 @@ async def run_orchestrator(request: DemoRequest) -> DemoResponse:
         f"Generated summary with {len(patient_summary.key_points)} key points"
     )
 
-    # Done
+    # Step 4: Complete
     trace.append(
         AgentTraceStep(
             agent_name="orchestrator",
