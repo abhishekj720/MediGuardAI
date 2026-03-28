@@ -10,6 +10,8 @@ export const insforge = createClient({
   anonKey: INSFORGE_ANON_KEY,
 });
 
+export type UserRole = 'doctor' | 'patient';
+
 export type User = {
   id: string;
   email: string;
@@ -17,6 +19,7 @@ export type User = {
   profile?: {
     name?: string;
     avatar_url?: string;
+    role?: UserRole;
   };
   createdAt: string;
   updatedAt: string;
