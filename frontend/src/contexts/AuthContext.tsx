@@ -9,7 +9,6 @@ import { insforge, User, UserRole } from "../lib/insforge";
 
 // Session storage keys
 const SESSION_KEY = "mediguardai_session";
-const USER_KEY = "mediguardai_user";
 
 interface StoredSession {
   accessToken: string;
@@ -53,9 +52,63 @@ function loadSession(): StoredSession | null {
 function clearSession() {
   try {
     localStorage.removeItem(SESSION_KEY);
-    localStorage.removeItem(USER_KEY);
   } catch (err) {
     console.error("Failed to clear session:", err);
+  }
+}
+
+// Fetch profile from database
+async function fetchProfileFromDB(userId: string): Promise<{ name?: string; role?: UserRole } | null> {
+  try {
+    const { data, error } = await insforge.database
+      .from("profiles")
+      .select("name, role")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (error || !data) {
+      return null;
+    }
+
+    return {
+      name: data.name as string | undefined,
+      role: data.role as UserRole | undefined,
+    };
+  } catch (err) {
+    console.error("Failed to fetch profile from DB:", err);
+    return null;
+  }
+}
+
+// Create or update profile in database
+async function upsertProfileInDB(userId: string, name: string, role: UserRole): Promise<boolean> {
+  try {
+    // First try to update
+    const { data: existingProfile } = await insforge.database
+      .from("profiles")
+      .select("id")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (existingProfile) {
+      // Update existing profile
+      const { error } = await insforge.database
+        .from("profiles")
+        .update({ name, role, updated_at: new Date().toISOString() })
+        .eq("user_id", userId);
+
+      return !error;
+    } else {
+      // Insert new profile
+      const { error } = await insforge.database
+        .from("profiles")
+        .insert({ user_id: userId, name, role });
+
+      return !error;
+    }
+  } catch (err) {
+    console.error("Failed to upsert profile in DB:", err);
+    return false;
   }
 }
 
@@ -72,7 +125,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (storedSession?.user) {
           setUser(storedSession.user);
           setLoading(false);
-          
+
           // Verify session is still valid in background
           try {
             const { data, error } = await insforge.auth.getCurrentUser();
@@ -81,14 +134,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               clearSession();
               setUser(null);
             } else {
-              // Refresh profile data
-              const { data: profileData } = await insforge.auth.getProfile(data.user.id);
-              const role = (profileData as Record<string, unknown>)?.role as UserRole | undefined;
+              // Refresh profile data from database
+              const profile = await fetchProfileFromDB(data.user.id);
               const userWithProfile = {
                 ...data.user,
                 profile: {
                   ...data.user.profile,
-                  role,
+                  name: profile?.name || data.user.profile?.name,
+                  role: profile?.role,
                 },
               } as User;
               setUser(userWithProfile);
@@ -107,14 +160,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // No stored session, try SDK's getCurrentUser
         const { data, error } = await insforge.auth.getCurrentUser();
         if (data?.user && !error) {
-          // Fetch full profile to get role
-          const { data: profileData } = await insforge.auth.getProfile(data.user.id);
-          const role = (profileData as Record<string, unknown>)?.role as UserRole | undefined;
+          // Fetch profile from database
+          const profile = await fetchProfileFromDB(data.user.id);
           const userWithProfile = {
             ...data.user,
             profile: {
               ...data.user.profile,
-              role,
+              name: profile?.name || data.user.profile?.name,
+              role: profile?.role,
             },
           } as User;
           setUser(userWithProfile);
@@ -141,19 +194,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       if (data?.user) {
-        // Fetch full profile to get role
-        const { data: profileData } = await insforge.auth.getProfile(data.user.id);
-        const role = (profileData as Record<string, unknown>)?.role as UserRole | undefined;
+        // Fetch profile from database
+        const profile = await fetchProfileFromDB(data.user.id);
         const userWithProfile = {
           ...data.user,
           profile: {
             ...data.user.profile,
-            role,
+            name: profile?.name || data.user.profile?.name,
+            role: profile?.role,
           },
         } as User;
-        
+
         setUser(userWithProfile);
-        
+
         // Save session to localStorage for persistence
         if (data.accessToken) {
           saveSession(data.accessToken, userWithProfile);
@@ -183,11 +236,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       if (data?.user && data?.accessToken) {
-        // Set the user's role in their profile
-        await insforge.auth.setProfile({
-          name,
-          role,
-        });
+        // Store profile in database
+        const profileSaved = await upsertProfileInDB(data.user.id, name, role);
+        if (!profileSaved) {
+          console.error("Failed to save profile to database");
+        }
 
         const userWithRole = {
           ...data.user,
@@ -197,9 +250,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             role,
           },
         } as User;
-        
+
         setUser(userWithRole);
-        
+
         // Save session to localStorage for persistence
         saveSession(data.accessToken, userWithRole);
       }
@@ -222,8 +275,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const isDoctor = user?.profile?.role === 'doctor';
-  const isPatient = user?.profile?.role === 'patient';
+  const isDoctor = user?.profile?.role === "doctor";
+  const isPatient = user?.profile?.role === "patient";
 
   return (
     <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, isDoctor, isPatient }}>
