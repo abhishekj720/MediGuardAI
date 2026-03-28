@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { fetchProcedures, submitDemo } from "../api/client";
+import { fetchProcedures, fetchPatients, submitDemo } from "../api/client";
 import AgentTrace from "../components/AgentTrace";
-import type { DemoResponse, Procedure } from "../types";
+import type { DemoResponse, Procedure, Patient } from "../types";
 
 export default function DoctorPortal() {
   const [procedures, setProcedures] = useState<Procedure[]>([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
   const [doctorNotes, setDoctorNotes] = useState("");
   const [procedureCode, setProcedureCode] = useState("");
   const [patientId, setPatientId] = useState("");
@@ -13,9 +14,12 @@ export default function DoctorPortal() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchProcedures()
-      .then(setProcedures)
-      .catch(() => setError("Failed to load procedures"));
+    Promise.all([fetchProcedures(), fetchPatients()])
+      .then(([procs, pats]) => {
+        setProcedures(procs);
+        setPatients(pats);
+      })
+      .catch(() => setError("Failed to load data"));
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -51,16 +55,24 @@ export default function DoctorPortal() {
           >
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Patient ID
+                Patient
               </label>
-              <input
-                type="text"
+              <select
                 value={patientId}
                 onChange={(e) => setPatientId(e.target.value)}
-                placeholder="e.g., PAT-001"
                 className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 required
-              />
+                disabled={patients.length === 0}
+              >
+                <option value="">
+                  {patients.length === 0 ? "No patients available" : "Select a patient..."}
+                </option>
+                {patients.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>

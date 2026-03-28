@@ -36,3 +36,8 @@ export interface Procedure {
   code: string;
   name: string;
 }
+
+export interface Patient {
+  id: string;
+  name: string;
+}
