@@ -21,12 +21,10 @@ export async function fetchPatients(): Promise<Patient[]> {
       return [];
     }
 
-    if (!data) {
-      console.warn("No patient data returned");
+    if (!data || (Array.isArray(data) && data.length === 0)) {
       return [];
     }
 
-    // Handle both array and single object responses
     const rows = Array.isArray(data) ? data : [data];
     
     return rows
