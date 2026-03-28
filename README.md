@@ -94,6 +94,14 @@ The API will be available at: http://localhost:8000
 ```bash
 # In a new terminal
 cd frontend
+
+# Copy environment file
+cp .env.example .env
+
+# Edit .env with your Insforge anon key
+# VITE_INSFORGE_BASE_URL=http://localhost:7130
+# VITE_INSFORGE_ANON_KEY=your_anon_key_here
+
 npm install
 npm run dev
 ```
