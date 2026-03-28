@@ -88,6 +88,15 @@ async def chat_completion_json(
         json_str = content.split("```")[1].split("```")[0].strip()
         return json.loads(json_str)
 
+    # Try to find JSON object between curly braces
+    try:
+        start = content.find('{')
+        end = content.rfind('}')
+        if start != -1 and end != -1 and end > start:
+            return json.loads(content[start:end+1])
+    except json.JSONDecodeError:
+        pass
+
     raise ValueError(f"Could not parse JSON from AI response: {content[:200]}")
 
 

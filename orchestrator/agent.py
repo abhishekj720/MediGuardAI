@@ -52,18 +52,18 @@ async def run_orchestrator(request: DemoRequest) -> DemoResponse:
         )
     )
 
-    # Step 2: Execute insurance lookup (deterministic, no LLM)
+    # Step 2: Execute insurance lookup (RAG-powered)
     trace.append(
         AgentTraceStep(
             agent_name="insurance",
-            action="lookup",
+            action="rag_lookup",
             input_summary=f"CPT: {request.procedure_code}, Patient: {request.patient_id}",
-            output_summary="Looking up coverage...",
+            output_summary="Retrieving coverage via RAG...",
             timestamp=datetime.now(timezone.utc),
         )
     )
 
-    insurance_quote = get_insurance_quote(
+    insurance_quote = await get_insurance_quote(
         request.procedure_code,
         request.patient_id,
     )
