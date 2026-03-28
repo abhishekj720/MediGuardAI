@@ -55,5 +55,5 @@ async def run_demo(request: DemoRequest):
 @app.get("/api/insurance/{procedure_code}")
 async def get_quote(procedure_code: str, patient_id: str = "default"):
     """Direct insurance quote lookup (for Dev 2 testing)."""
-    quote = get_insurance_quote(procedure_code, patient_id)
+    quote = await get_insurance_quote(procedure_code, patient_id)
     return quote
