@@ -33,6 +33,15 @@ async def get_diseases() -> list[dict]:
     return result.get("rows", [])
 
 
+async def execute_rpc(function_name: str, params: dict) -> list[dict]:
+    """Call a Postgres function (RPC) via Insforge and return the rows."""
+    # Build a parameterized SELECT call to the function
+    param_placeholders = ", ".join(f"${i+1}" for i in range(len(params)))
+    query = f"SELECT * FROM {function_name}({param_placeholders})"
+    result = await execute_sql(query, list(params.values()))
+    return result.get("rows", [])
+
+
 async def get_disease_by_icd10(icd10_code: str) -> dict | None:
     """Fetch a disease by ICD-10 code."""
     result = await execute_sql(

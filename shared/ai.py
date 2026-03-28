@@ -14,7 +14,7 @@ load_dotenv()
 INSFORGE_API_KEY = os.getenv("INSFORGE_API_KEY", "")
 INSFORGE_API_BASE_URL = os.getenv("INSFORGE_API_BASE_URL", "http://localhost:7130")
 
-DEFAULT_MODEL = "anthropic/claude-sonnet-4-6"
+DEFAULT_MODEL = "anthropic/claude-sonnet-4.5"
 
 
 async def chat_completion(
@@ -49,7 +49,7 @@ async def chat_completion(
         response.raise_for_status()
         data = response.json()
 
-    return data.get("content", "")
+    return data.get("text", "")
 
 
 async def chat_completion_json(
@@ -86,3 +86,29 @@ async def chat_completion_json(
         return json.loads(json_str)
 
     raise ValueError(f"Could not parse JSON from AI response: {content[:200]}")
+
+
+async def generate_embeddings(
+    inputs: list[str],
+    model: str = "openai/text-embedding-3-small",
+) -> list[list[float]]:
+    """Generate vector embeddings via Insforge POST /api/ai/embeddings.
+
+    Returns a list of 1536-dim float vectors, one per input string.
+    Batches are handled by the caller — pass up to 20 inputs at a time.
+    """
+    async with httpx.AsyncClient(timeout=60.0) as client:
+        response = await client.post(
+            f"{INSFORGE_API_BASE_URL}/api/ai/embeddings",
+            headers={
+                "Authorization": f"Bearer {INSFORGE_API_KEY}",
+                "Content-Type": "application/json",
+            },
+            json={"model": model, "input": inputs},
+        )
+        response.raise_for_status()
+        data = response.json()
+
+    # Sort by index to preserve input order
+    items = sorted(data["data"], key=lambda x: x["index"])
+    return [item["embedding"] for item in items]
