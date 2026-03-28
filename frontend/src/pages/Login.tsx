@@ -23,7 +23,7 @@ export default function Login() {
       return;
     }
 
-    navigate("/doctor");
+    navigate("/");
   };
 
   return (
