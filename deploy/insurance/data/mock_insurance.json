@@ -1,0 +1,72 @@
+{
+  "99213": {
+    "procedure_name": "Office Visit (Established Patient, Moderate Complexity)",
+    "coverage_percent": 80,
+    "out_of_pocket_estimate": 45.00,
+    "prior_auth_required": false,
+    "notes": "Standard copay applies. No referral needed."
+  },
+  "99214": {
+    "procedure_name": "Office Visit (Established Patient, High Complexity)",
+    "coverage_percent": 80,
+    "out_of_pocket_estimate": 65.00,
+    "prior_auth_required": false,
+    "notes": "Standard copay applies. No referral needed."
+  },
+  "27447": {
+    "procedure_name": "Total Knee Replacement",
+    "coverage_percent": 70,
+    "out_of_pocket_estimate": 8500.00,
+    "prior_auth_required": true,
+    "notes": "Prior authorization required. Must demonstrate 6 months of conservative treatment failure."
+  },
+  "70553": {
+    "procedure_name": "Brain MRI with and without Contrast",
+    "coverage_percent": 85,
+    "out_of_pocket_estimate": 320.00,
+    "prior_auth_required": true,
+    "notes": "Prior authorization required. Clinical justification must accompany request."
+  },
+  "43239": {
+    "procedure_name": "Upper GI Endoscopy with Biopsy",
+    "coverage_percent": 90,
+    "out_of_pocket_estimate": 175.00,
+    "prior_auth_required": false,
+    "notes": "Covered under preventive/diagnostic benefit when medically necessary."
+  },
+  "93000": {
+    "procedure_name": "Electrocardiogram (ECG/EKG), 12-Lead",
+    "coverage_percent": 100,
+    "out_of_pocket_estimate": 0.00,
+    "prior_auth_required": false,
+    "notes": "Fully covered as diagnostic procedure."
+  },
+  "90837": {
+    "procedure_name": "Psychotherapy, 60 Minutes",
+    "coverage_percent": 75,
+    "out_of_pocket_estimate": 50.00,
+    "prior_auth_required": false,
+    "notes": "Mental health parity applies. 30 sessions/year limit."
+  },
+  "29881": {
+    "procedure_name": "Knee Arthroscopy with Meniscectomy",
+    "coverage_percent": 80,
+    "out_of_pocket_estimate": 2200.00,
+    "prior_auth_required": true,
+    "notes": "Prior authorization required. MRI results must be submitted."
+  },
+  "36415": {
+    "procedure_name": "Routine Venipuncture (Blood Draw)",
+    "coverage_percent": 100,
+    "out_of_pocket_estimate": 0.00,
+    "prior_auth_required": false,
+    "notes": "Fully covered when ordered by treating physician."
+  },
+  "71046": {
+    "procedure_name": "Chest X-Ray, 2 Views",
+    "coverage_percent": 90,
+    "out_of_pocket_estimate": 25.00,
+    "prior_auth_required": false,
+    "notes": "Covered under diagnostic imaging benefit."
+  }
+}
